@@ -13,7 +13,7 @@ def main(argv):
 			crimeCountAvgList.append(int(crimeCountAvg))
 
 	plot(tMaxList, crimeCountAvgList)
-
+	
 def plot(x, y):
 	#Pieces of code for matplotlib visualizations taken from http://www.randalolson.com/2014/06/28/how-to-make-beautiful-data-visualizations-in-python-with-matplotlib/
 	
