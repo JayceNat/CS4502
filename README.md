@@ -9,7 +9,7 @@ Description of the project: The goal of our work was to discover correlations be
 
 Summary of the question(s) sought and the answers: With our research, we wanted to find out What were the correlations (if any) 
   between weather, crime, time, and location in the Denver area.
-    - We found that (using weather data from 2013) most crimes happened on days with rain. There was roughly 56% chance for crime 
+    - We found that (using weather data from 2013) most crimes happened on days with rain. There was roughly a 43% chance for crime 
     on a rainy day in 2013.
     - As far as temperature, we found that the peak amount of crimes occurred between 80 and 90 degrees F. 
     - As far as time of day for all crimes, the least likely time for crime is around 5am. The most likely time for crime is around 10pm.
