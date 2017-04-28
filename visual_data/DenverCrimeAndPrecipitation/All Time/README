@@ -1,3 +1,3 @@
 This is all of the crime and precipitation data correlated together. For this data I've removed all traffic-accident reports so that the data wouldn't be skewed.
 
-From this data we can see if rain causes more or less crimes to occur. According to these data sets the average number of crimes on days that it rains is 138.7 and the average number of crimes on a day without rain is 142.3.
+From this data we can see if rain causes more or less crimes to occur. According to these data sets the average number of crimes on days that it rains is 138.7 and the average number of crimes on a day without rain is 142.3. Meaning that the occurrence of rain might be the cause for slighly less crimes to occur.
