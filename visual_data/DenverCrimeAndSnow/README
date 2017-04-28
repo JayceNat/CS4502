@@ -1,1 +1,3 @@
 This is all of the Denver crime and snow data correlated. I've removed traffic reports so that the data isn't skewed.
+
+I would say that we shouldn't use this data unless we really need to. The data set that had the preceipitation had a lot of strange errors with recording the snow.
