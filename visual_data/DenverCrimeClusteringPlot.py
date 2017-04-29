@@ -3,6 +3,7 @@ import random
 import math
 import matplotlib.pyplot as plt
 import QueryDB as qry
+import urllib
 
 class Location:
 	def __init__(self, x, y):
@@ -32,29 +33,32 @@ class Centroid:
 		self.loc.x = self.newX / self.newXCount
 		self.loc.y = self.newY / self.newYCount
 
-maxGeoLat = 39.8
-minGeoLat = 39.658
-maxGeoLon = -104.913
-minGeoLon = -105.134
+maxGeoLat = 39.812
+minGeoLat = 39.645
+maxGeoLon = -104.854
+minGeoLon = -105.075
+colors = ["#B11E0C", "#2F7F24", "#0F4D97", "#970f95", "#34B7C2", "#BB811B"]
+
+crime = ["Shoplifting2", "2303"]
+k = 5
+iteration = 5
 
 def main(argv):
-	cursor = qry.queryDB("select Geo_Lon, Geo_Lat from DenverCrime where Geo_Lat > " + str(minGeoLat) + " and Geo_Lat < " + str(maxGeoLat) + " and Geo_Lon < " + str(maxGeoLon) + " and Geo_Lon > " + str(minGeoLon) + " and Offense_Code = 2303")
+	cursor = qry.queryDB("select Geo_Lon, Geo_Lat from DenverCrime where Geo_Lat > " + str(minGeoLat) + " and Geo_Lat < " + str(maxGeoLat) + " and Geo_Lon < " + str(maxGeoLon) + " and Geo_Lon > " + str(minGeoLon) + " and Offense_Code = " + crime[1])
 	locations = []
 	for (geoLon, geoLat) in cursor:
 		if geoLon is not None and geoLat is not None:
 			locations.append(Location(geoLon, geoLat))
-			
+	
+	#downloadMap()
 
-	#plot(tMaxList, crimeCountAvgList)
-	kMeans(locations, 3, 5)
-	#plt.plot(lon, lat, "o")
-	#plt.show()
+	kMeans(locations, k, iteration)
 
 def kMeans(data, k, maxIterations):
+	formatPlot()
 	centroids = []
 	for i in range(0, k):
 		centroids.append(Centroid(Location(random.uniform(minGeoLon, maxGeoLon), random.uniform(minGeoLat, maxGeoLat))))
-		print(str(centroids[i].loc.x) + " " + str(centroids[i].loc.y))
 
 	for i in range(0, maxIterations):
 		for point in data:
@@ -68,28 +72,21 @@ def kMeans(data, k, maxIterations):
 
 		for centroid in centroids:
 			centroid.update()
-			print(centroid.loc.x)
-			#plt.plot(y.loc.x, y.loc.y, "bo")
 
-	for x in data:
-		if x.currentCentroid == 0:
-			plt.plot(x.x, x.y, "ro")
-		elif x.currentCentroid == 1:
-			plt.plot(x.x, x.y, "bo")
-		elif x.currentCentroid == 2:
-			plt.plot(x.x, x.y, "go")
+	for point in data:
+		plt.plot(point.x, point.y, marker="o",color=colors[point.currentCentroid])
 
-	#img = plt.imread("Chart.png")
-	#plt.imshow(img, extent=[minGeoLon, maxGeoLon, minGeoLat, maxGeoLat])
-	plt.show()
+	img = plt.imread("map.png")
+	plt.imshow(img, zorder=0, extent=[minGeoLon, maxGeoLon, minGeoLat, maxGeoLat])
+	#plt.show()
+	plt.savefig("CrimeClustering/" + crime[0] + "-k" + str(k) + "Cluster.png", bbox_inches="tight", dpi=300)
 
+def downloadMap():
+	urllib.urlretrieve("https://maps.googleapis.com/maps/api/staticmap?center=39.729,-104.9645&zoom=12&size=640x640&scale=2&key=*Your Key Here*", "map.png")
 	
-def plot(x, y):
-	#Pieces of code for matplotlib visualizations taken from http://www.randalolson.com/2014/06/28/how-to-make-beautiful-data-visualizations-in-python-with-matplotlib/
-	
-	plt.rc("axes", edgecolor="#BFBFBF")
-
-	plt.figure(figsize=(11, 6))
+def formatPlot():
+	plt.figure(figsize=(7, 7))
+	plt.rc("axes", edgecolor="#FFFFFF")
 
 	ax = plt.subplot(111)
 	ax.spines["top"].set_visible(False)
@@ -97,22 +94,8 @@ def plot(x, y):
 
 	plt.tick_params(bottom='off', top='off', right='off', left='off')
 
-	for y2 in range(30, 200, 30):
-		plt.plot([1,105], [y2, y2], "--", lw=0.4, color="black", alpha=0.2)
-
-	plt.yticks(range(0, 200, 30), fontsize=14)
-	plt.xticks(fontsize=14)
-
-	plt.xlabel("Max Daily Temperature (F)")
-	plt.ylabel("Average Daily Crimes")
-
-	plot1 = plt.plot(x, y, color="#E8B14F", lw=1.4, label="Avg Crimes", alpha=.9)
-	#plot2 = plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 4))(np.unique(x)), color='red', linestyle='--', dashes=(5, 10), label="Trend (poly 4)")
-	
-	plt.axis([0, 106, 0, 200])
-	plt.legend(loc="lower right", frameon=False, fontsize=12)
-	#plt.show()
-	plt.savefig("DenverCrimeTMax.png", bbox_inches="tight", dpi=300)
+	plt.yticks(fontsize=5)
+	plt.xticks(fontsize=5)
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
