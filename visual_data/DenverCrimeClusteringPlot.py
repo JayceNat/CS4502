@@ -1,7 +1,6 @@
 import sys
 import random
 import math
-import numpy as np
 import matplotlib.pyplot as plt
 import QueryDB as qry
 
@@ -29,11 +28,9 @@ class Centroid:
 		self.newY += location.y
 		self.newYCount += 1;
 
-	def computeNew(self):
-		self.loc.x = newX / newXCount
-		self.loc.y = newY / newYCount
-
-
+	def update(self):
+		self.loc.x = self.newX / self.newXCount
+		self.loc.y = self.newY / self.newYCount
 
 maxGeoLat = 39.8
 minGeoLat = 39.658
@@ -59,22 +56,31 @@ def kMeans(data, k, maxIterations):
 		centroids.append(Centroid(Location(random.uniform(minGeoLon, maxGeoLon), random.uniform(minGeoLat, maxGeoLat))))
 		print(str(centroids[i].loc.x) + " " + str(centroids[i].loc.y))
 
-	for point in data:
-		minDistance = sys.float_info.max
-		for i, centroid in enumerate(centroids):
-			distance = point.distanceTo(centroid.loc)
-			if distance < minDistance:
-				minDistance = distance
-				point.currentCentroid = i
-		centroids[point.currentCentroid].assignLocationToSelf(point)
+	for i in range(0, maxIterations):
+		for point in data:
+			minDistance = sys.float_info.max
+			for i, centroid in enumerate(centroids):
+				distance = point.distanceTo(centroid.loc)
+				if distance < minDistance:
+					minDistance = distance
+					point.currentCentroid = i
+			centroids[point.currentCentroid].assignLocationToSelf(point)
 
-	for y in centroids:
-		plt.plot(y.loc.x, y.loc.y, "bo")
+		for centroid in centroids:
+			centroid.update()
+			print(centroid.loc.x)
+			#plt.plot(y.loc.x, y.loc.y, "bo")
 
 	for x in data:
-		if x.currentCentroid == 1:
+		if x.currentCentroid == 0:
 			plt.plot(x.x, x.y, "ro")
+		elif x.currentCentroid == 1:
+			plt.plot(x.x, x.y, "bo")
+		elif x.currentCentroid == 2:
+			plt.plot(x.x, x.y, "go")
 
+	#img = plt.imread("Chart.png")
+	#plt.imshow(img, extent=[minGeoLon, maxGeoLon, minGeoLat, maxGeoLat])
 	plt.show()
 
 	
@@ -101,7 +107,7 @@ def plot(x, y):
 	plt.ylabel("Average Daily Crimes")
 
 	plot1 = plt.plot(x, y, color="#E8B14F", lw=1.4, label="Avg Crimes", alpha=.9)
-	plot2 = plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 4))(np.unique(x)), color='red', linestyle='--', dashes=(5, 10), label="Trend (poly 4)")
+	#plot2 = plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 4))(np.unique(x)), color='red', linestyle='--', dashes=(5, 10), label="Trend (poly 4)")
 	
 	plt.axis([0, 106, 0, 200])
 	plt.legend(loc="lower right", frameon=False, fontsize=12)
